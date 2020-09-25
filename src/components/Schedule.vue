@@ -1,68 +1,25 @@
 <template>
     <div class="calendar">
         <div class="calendar-bar">
-            <span class="calendar-month">{{month}}</span>
-            <button @click="today">Today</button>
+            <span class="calendar-month">{{calendar.year}}  {{calendar.month+1}}月</span>
+            <button @click="returnToday">Today</button>
 
-            <i @click="changeIndex(-1)" class="el-icon-arrow-left"></i>
-            <i @click="changeIndex(+1)" class="el-icon-arrow-right"></i>
+            <i @click="changeMonth(false)" class="el-icon-arrow-left"></i>
+            <i @click="changeMonth(true)" class="el-icon-arrow-right"></i>
         </div>
+
         <div class="calendar-grid">
-            <div class="calendar-date not-current">
-                <span class="calendar-date__day">30</span>
+<!--            <div class="calendar-date not-current" >-->
+<!--                <span class="calendar-date__day"></span>-->
+<!--            </div>-->
+
+            <div class="calendar-date" :class="{'not-current': i.month!==calendar.month}" v-for="(i,key) in calendarMonth" :key="key">
+                <span class="calendar-date__day">{{i.date}}</span>
             </div>
-            <div class="calendar-date not-current" >
-                <span class="calendar-date__day">31</span>
-            </div>
-            <div class="calendar-date">
-                <span class="calendar-date__day">{{today.day}}</span>
-            </div>
-            <div class="calendar-date">
-                <span class="calendar-date__day"></span>
-                <div class="caledar-date__schedule">
-                    <div class="calendar-date__row">特休</div>
-                </div>
-            </div>
-            <div class="calendar-date">
-                <span class="calendar-date__day">3</span>
-                <div class="calendar-date__row">加班2h</div>
-            </div>
-            <div class="calendar-date"></div>
-            <div class="calendar-date"></div>
-            <div class="calendar-date"></div>
-            <div class="calendar-date"></div>
-            <div class="calendar-date"></div>
-            <div class="calendar-date"></div>
-            <div class="calendar-date"></div>
-            <div class="calendar-date"></div>
-            <div class="calendar-date"></div>
-            <div class="calendar-date"></div>
-            <div class="calendar-date"></div>
-            <div class="calendar-date"></div>
-            <div class="calendar-date"></div>
-            <div class="calendar-date"></div>
-            <div class="calendar-date"></div>
-            <div class="calendar-date"></div>
-            <div class="calendar-date"></div>
-            <div class="calendar-date"></div>
-            <div class="calendar-date"></div>
-            <div class="calendar-date"></div>
-            <div class="calendar-date"></div>
-            <div class="calendar-date"></div>
-            <div class="calendar-date"></div>
-            <div class="calendar-date"></div>
-            <div class="calendar-date"></div>
-            <div class="calendar-date"></div>
-            <div class="calendar-date"></div>
-            <div class="calendar-date not-current">
-                <span class="calendar-date__day">1</span>
-            </div>
-            <div class="calendar-date not-current">
-                <span class="calendar-date__day">2</span>
-            </div>
-            <div class="calendar-date not-current">
-                <span class="calendar-date__day">3</span>
-            </div>
+
+<!--            <div class="calendar-date not-current">-->
+<!--                <span class="calendar-date__day"></span>-->
+<!--            </div>-->
         </div>
     </div>
 </template>
@@ -70,73 +27,97 @@
 <script>
     import moment from 'moment';
     export default {
-        name:'calendar',
-        data(){
-            return{
-                index:0,
-                month:"",
-                menu: [
-                    {type:"",day:1},
-                    {type:"",day:2},
-                    {type:"",day:3},
-                    {type:"",day:4},
-                    {type:"",day:5},
-                    {type:"",day:6},
-                    {type:"",day:7},
-                    {type:"",day:8},
-                    {type:"",day:9},
-                    {type:"",day:10},
-                    {type:"",day:11},
-                    {type:"",day:12},
-                    {type:"",day:13},
-                    {type:"",day:14},
-                    {type:"",day:15},
-                    {type:"",day:16},
-                    {type:"",day:17},
-                    {type:"",day:18},
-                    {type:"",day:19},
-                    {type:"",day:20},
-                    {type:"",day:21},
-                    {type:"",day:22},
-                    {type:"",day:23},
-                    {type:"",day:24},
-                    {type:"",day:25},
-                    {type:"",day:26},
-                    {type:"",day:27},
-                    {type:"",day:28},
-                    {type:"",day:29},
-                    {type:"",day:30},
-                    {type:"",day:31}
-                ]}
-            },
-        computed:{
-            today(){
-                console.log(this.menu[this.index])
-                return this.menu[this.index]
-            },
-            // dayChange(){
-            // moment('YYYY-MM-DD').subtract(1, 'month').format('LL')
-            // moment('YYYY-MM-DD').add(1, 'month').format('LL')
-            //     }
-
-            }
-            // total(){
-            //     return this.menu.length
-            // }
-        ,
-        methods:{
-            changeIndex(change) {
-                this.month = this.month + change + this.menu
-            },
-            moment: function (date) {
-                    return moment(date)
+        name: 'calendar',
+        data() {
+            return {
+                calendar:{
+                    year: 0,
+                    month: 1,
+                    date: 0,
+                    day: 0
                 },
+                today:{
+                    year:0,
+                    month:0,
+                    date:0,
+                    day:0
+                },
+            }
+        },
+        mounted() {
+            const date = new Date()
+            this.today.year = this.calendar.year = date.getFullYear()
+            this.today.month = this.calendar.month = date.getMonth()
+            this.today.date = this.calendar.date = date.getDate()
+            this.today.day = this.calendar.day = date.getDay()
+        },
+        methods: {
+            moment: function () {
+                return moment();
+            },
+            changeMonth(isNext){
+                let month = this.calendar.month
+                isNext === true? (month = month+1):(month = month-1)
+
+                if(month < 0){
+                    month = 11
+                }else{
+                    if (month > 11){
+                        month = 0
+                    }
+                }
+                this.calendar.month = month
+                this.calendar.date = 1
+            },
+            returnToday(){
+                this.calendar.month =  this.today.month
+                this.calendar.date = this.today.date
+            }
+        },
+        computed: {
+            firstDay() {
+            const mDate = new Date(this.calendar.year,this.calendar.month,1)
+            const date = new Date(this.calendar.year,this.calendar.month,1 - mDate.getDay())
+            return{
+                year:date.getFullYear(),
+                month:date.getMonth(),
+                date:date.getDate(),
+                day:date.getDay()
+                }
+            },
+            calendarMonth(){
+                const data = []
+                let date
+                for(let i=0; i<42; i++){
+                 date = new Date(this.firstDay.year,this.firstDay.month,this.firstDay.date +i)
+                 data.push({
+                    year:date.getFullYear(),
+                    month:date.getMonth(),
+                    date:date.getDate(),
+                    day:date.getDay()
+                })
+
+                }
+                return data
+
+            },
+            // notCurrent(){
+            //     if(this.calendar.month != this.today.month)
+            //         return false
+            // }
 
         }
+
+
     }
 </script>
 
 <style lang="sass">
+
+    .sss
+        color: #ff253a
+        background-color: red
+
     .calendar
         margin-left: 250px
         // margin-right: 400px
